@@ -1,34 +1,7 @@
 from tkinter import END
 from peewee import *
 from tkinter.messagebox import *
-import os
-import datetime
-
-class Log():
-    def Decorator(method):
-        def txt(self, *args):
-            ruta = os.path.dirname(os.path.abspath(__file__))+"\\Log.txt"
-            log = open(ruta, 'a+')
-            
-            time = datetime.datetime.now().strftime("%d/%m/%y %H:%M")
-            titulo = args[0].get()
-            
-            if method.__name__ == 'alta':
-                estado = 'Creado'
-            
-            if method.__name__ == 'baja':
-                estado = 'Eliminado'
-            
-            if method.__name__ == 'modificar':
-                if titulo != args[4]: 
-                    estado = 'Nombre modificado' + ' - (Nombre anterior: ' + str(args[4]) + ')'
-                else:
-                    estado = 'Modificado'
-
-            print(time, '-', 'Titulo', titulo, estado, file= log)  
-            log.close()    
-            method(self,*args)
-        return txt
+from decorator import Decorator
 
 db = SqliteDatabase('de_angelis.db')
 
@@ -44,7 +17,7 @@ class Noticia(BaseModel):
     mensaje = CharField()
 
 
-class Abmc(Log):
+class Abmc():
     def __init__(self):
         db.connect()
         db.create_tables([Noticia])
@@ -68,7 +41,7 @@ class Abmc(Log):
             )
             contador += 1
     
-    @Log.Decorator
+    @Decorator
     def alta(self, titulo, descripcion, mitreeview, accion):
         try:
             dato = [titulo.get(), descripcion.get(), accion]
@@ -83,7 +56,7 @@ class Abmc(Log):
             showinfo("Error en alta de datos",
                      "Ya se encuentra un titulo cargado con ese nombre, intente otro")
 
-    @Log.Decorator
+    @Decorator
     def baja(self,titulo, mitreeview):
         try:
             item_seleccionado = mitreeview.focus()
@@ -98,7 +71,7 @@ class Abmc(Log):
             showinfo("Error al borrar datos",
                      "Usted no a seleccionado ninguna fila para eliminar")
 
-    @Log.Decorator
+    @Decorator
     def modificar(self, titulo, descripcion, mitreeview, accion, titulo_anterior):
         try:
             item_seleccionado = mitreeview.focus()
