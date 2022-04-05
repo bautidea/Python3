@@ -2,6 +2,7 @@ from tkinter import END
 from peewee import *
 from tkinter.messagebox import *
 from decorator import Decorator
+import observers
 
 db = SqliteDatabase('de_angelis.db')
 
@@ -17,7 +18,7 @@ class Noticia(BaseModel):
     mensaje = CharField()
 
 
-class Abmc():
+class Abmc(observers.Tema):
     def __init__(self):
         db.connect()
         db.create_tables([Noticia])
