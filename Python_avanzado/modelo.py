@@ -6,7 +6,6 @@ import observers
 
 db = SqliteDatabase('de_angelis.db')
 
-
 class BaseModel(Model):
     class Meta:
         database = db
