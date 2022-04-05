@@ -52,6 +52,7 @@ class Abmc(observers.Tema):
             noticia.save()
 
             self.actualizar_treeview(mitreeview)
+            self.Notify_alta(titulo.get())
 
         except:
             showinfo("Error en alta de datos",
@@ -68,6 +69,7 @@ class Abmc(observers.Tema):
             noticia.delete_instance()
 
             self.actualizar_treeview(mitreeview)
+            self.Notify_borrar(titulo.get())
         except:
             showinfo("Error al borrar datos",
                      "Usted no a seleccionado ninguna fila para eliminar")
@@ -88,6 +90,7 @@ class Abmc(observers.Tema):
             ).execute()
 
             self.actualizar_treeview(mitreeview)
+            self.Notify_modificar(titulo.get(), titulo_anterior)
         except:
             showinfo("Error en alta de datos",
                      "Ya se encuentra un titulo cargado con ese nombre, intente otro")

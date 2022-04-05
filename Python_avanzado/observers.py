@@ -1,23 +1,48 @@
+import os
+import datetime
+
+
 class Tema():
     observadores = []
     
-    def Notify_alta(self):
-        pass
+    def Add(self, obj):
+        self.observadores.append(obj)
+            
+    def Notify_alta(self, *args):
+        self.observadores[0].Update(args)
     
-    def Notify_Borrar(self):
-        pass
+    def Notify_borrar(self, *args):
+        self.observadores[1].Update(args)
     
-    def Notify_modificar(self):
-        pass
+    def Notify_modificar(self, *args):
+        self.observadores[2].Update(args)
 
-class Alta_observer():
+class Log_observer():
+    ruta = os.path.dirname(os.path.abspath(__file__))+"\\observer_log.txt"
+    log = open(ruta, 'a+')
+    
+    time = datetime.datetime.now().strftime("%d/%m/%y %H:%M")
+
+class Alta_observer(Log_observer):
     def __init__(self, obj):
         self.obs_a = obj
+        self.obs_a.Add(self)
+        
+    def Update(self, *args):
+        print(args)
 
-class Borrar_observer():
+class Borrar_observer(Log_observer):
     def __init__(self, obj):
         self.obs_b = obj
+        self.obs_b.Add(self)
+    
+    def Update(self, *args):
+        print(args)
 
-class Modificar_observer():
+class Modificar_observer(Log_observer):
     def __init__(self, obj):
         self.obs_c = obj
+        self.obs_c.Add(self)
+    
+    def Update(self, *args):
+        print(args)
