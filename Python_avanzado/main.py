@@ -4,13 +4,13 @@ import observers
 
 
 class Main:
-    """
-    Está es la clase principal
-    """
-
     def __init__(self, root):
         self.objeto = Ventanita(root)
         self.objeto.actualizar()
+        
+        # Instancio los observadores, indicandoles a cada uno el metodo 
+        # a observar, pasandoles por parametro la instanciacion de la 
+        # clase del CRUD.
         self.obs_a = observers.Alta_observer(self.objeto.objeto_base)
         self.obs_b = observers.Borrar_observer(self.objeto.objeto_base)
         self.obs_c = observers.Modificar_observer(self.objeto.objeto_base)

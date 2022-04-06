@@ -6,25 +6,31 @@ from tkinter.messagebox import *
 import datetime
 
     
-class Mensaje():
+class Mensaje(): 
+    # Cuando se imprima la instancia de esta clase nos devolvera
+    # la accion que se le pase por parametro.
     def __init__(self, accion):
         self.accion = accion
 
     def __str__(self):
+        # Metodo de instancia que me devuelve una accion al imprimir la instancia de la clase
         return "Titulo " + self.accion + ": " + datetime.datetime.now().strftime("%d/%m/%y %H:%M")
 
 
 class Ventanita():
     def __init__(self, window):
+        # Inicializamos las instancias de las clases a utilizar
+        # y creamos los elementos interactivos de la app.
+        
         self.root = window
         self.objeto_base = Abmc()
 
-        # Frame
+        # Frame.
         self.root.title("Tarea Poo")
         self.root.resizable(False, False)
         self.root.configure(background="AntiqueWhite2")
 
-        # Etiquetas
+        # Etiquetas.
         self.superior = Label(
             self.root,
             text="Ingrese sus datos",
@@ -109,14 +115,14 @@ class Ventanita():
             sticky="nsew"
         )
 
-        # Entradas
+        # Entradas.
         self.tit = Entry(self.root)
         self.tit.grid(row=1, column=3, sticky="nsew")
         self.tit.focus_set()
         self.des = Entry(self.root)
         self.des.grid(row=2, column=3, sticky="nsew")
 
-        # Botones
+        # Botones.
         self.boton_alta = Button(
             self.root,
             text="Alta",
@@ -143,7 +149,7 @@ class Ventanita():
         )
         self.boton_borrar.grid(row=4, column=2, sticky="e")
 
-        # Radiobutton
+        # Radiobutton.
         self.boton_tema1 = Radiobutton(
             self.root,
             text="Tema 1",
@@ -196,7 +202,7 @@ class Ventanita():
         )
         self.boton_tema3.grid(column=0, row=9, columnspan=4, sticky="nsew")
 
-        # Tree
+        # Treeview.
         columnas = ("col_1", "col_2", "col_3", "col_4")
         self.tree = ttk.Treeview(self.root, columns=columnas, show="headings")
 
@@ -227,14 +233,12 @@ class Ventanita():
         self.tree.bind("<Double-1>", self.on_tree_2click)
         self.tree.bind("<1>", self.on_tree_1click)
 
-        # Aviso
-        """
-        showinfo("AVISO!",
-                 "Para editar o borrar algun elemento haga doble click sobre el.")
-        """
-
-    def alta(self):
-        accion = Mensaje("Creado")
+    def alta(self): 
+        # Metodo de clase encargado de subir informacion a la base de datos.
+        
+        # Instancio a la clase mensaje para obtener estado.
+        accion = Mensaje("Creado") 
+        
         self.objeto_base.alta(
             self.tit,
             self.des,
@@ -242,12 +246,17 @@ class Ventanita():
             accion
         )
 
+        # Formateo los entrys.
         self.tit.delete(0, END)
         self.des.delete(0, END)
 
-    def borrar(self):
+    def borrar(self): 
+        # Metodo de clase encargado de eliminar informacion de la base de datos.
+        
         self.objeto_base.baja(self.tit, self.tree)
 
+        # Se formatea la app, se bloquean ('editar' y 'borrar')
+        # y activan ('alta') botones, formatean entrys, borran labels.
         self.boton_alta.configure(state=NORMAL)
         self.boton_editar.configure(state=DISABLED)
         self.boton_borrar.configure(state=DISABLED)
@@ -257,6 +266,9 @@ class Ventanita():
         self.des.delete(0, END)
 
     def modificar(self):
+        # Metodo de clase encargado de modificar informacion de la base de datos.
+        
+        # Instancio a la clase mensaje para obtener estado.
         accion = Mensaje("Modificado")
         
         self.objeto_base.modificar(
@@ -267,6 +279,8 @@ class Ventanita():
             self.tit_anterior
         )
 
+        # Se formatea la app, se bloquean ('editar' y 'borrar')
+        # y activan ('alta') botones, formatean entrys, borran labels.
         self.boton_alta.configure(state=NORMAL)
         self.boton_editar.configure(state=DISABLED)
         self.boton_borrar.configure(state=DISABLED)
@@ -276,13 +290,18 @@ class Ventanita():
         self.des.delete(0, END)
 
     def actualizar(self):
+        # Metodo de clase que me actualiza la vista del treeview cuando se abre la app
+        # mostrandome todos los datos cargados en la base de datos.
+        
         self.objeto_base.actualizar_treeview(self.tree)
 
     def on_tree_2click(self, event):
+        # Metodo de clase, cuando se clickea dos veces en algun elemento del treview.
         try:
             item_seleccionado = self.tree.focus()
             valor_id = self.tree.item(item_seleccionado, "values")
 
+            # Se crean etiquetas que referencian el ID del elemento seleccionado.
             self.etiqueta_id = Label(
                 self.root,
                 text="ID",
@@ -314,20 +333,28 @@ class Ventanita():
                 rowspan=2
             )
 
+            # Se insertan en los entrys los datos del elemento.
             self.tit.insert(END, str(valor_id[1]))
             self.tit.focus_set()
             self.des.insert(END, str(valor_id[2]))
             
+            # Obtenemos el nombre del titulo, previo a su modificacion.
             self.tit_anterior = self.tit.get()
 
+            # Habilitamos los botones de 'borrar' y 'editar'
+            # dehabilitamos el boton de 'alta'.
             self.boton_editar.configure(state=NORMAL)
             self.boton_borrar.configure(state=NORMAL)
             self.boton_alta.configure(state=DISABLED)
+            
         except:
             showinfo("Seleccion incorrecta",
                      "Seleccione una noticia valida")
 
     def on_tree_1click(self, event):
+        # Metodo de clase, cuando se clickea una vez en alguna parte del treeview
+        # seformatea la app.
+        
         try:
             self.boton_alta.configure(state=NORMAL)
             self.boton_editar.configure(state=DISABLED)
