@@ -11,18 +11,18 @@ def Decorator(method):
         titulo = args[0].get()
         
         if method.__name__ == 'alta':
-            estado = 'Creado'
+            estado = 'creado'
         
         if method.__name__ == 'baja':
-            estado = 'Eliminado'
+            estado = 'eliminado'
         
         if method.__name__ == 'modificar':
             if titulo != args[4]: 
-                estado = 'Nombre modificado' + ' - (Nombre anterior: ' + str(args[4]) + ')'
+                estado = 'nombre modificado' + ' - (Nombre anterior: ' + str(args[4]) + ')'
             else:
-                estado = 'Modificado'
+                estado = 'modificado'
 
         print(time, '-', 'Titulo', titulo, estado, file= log)  
         log.close()    
-        method(self,*args)
+        method(*args)
     return txt
