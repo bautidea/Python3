@@ -1,4 +1,3 @@
-from ast import arg
 import os
 import datetime
 
@@ -18,32 +17,42 @@ class Tema():
     def Notify_modificar(self, *args):
         self.observadores[2].Update(*args)
 
-class Log_observer():
+class Observer():
     ruta = os.path.dirname(os.path.abspath(__file__))+"\\observer_log.txt" 
     time = datetime.datetime.now().strftime("%d/%m/%y %H:%M")
+    
+    def Update(self):
+        raise NotImplementedError('Delegacion de actualizacion')
 
-class Alta_observer(Log_observer):
+class Alta_observer(Observer):
     def __init__(self, obj):
         self.obs_a = obj
         self.obs_a.Add(self)
         
     def Update(self, *args):
         log = open(self.ruta, 'a+')
-        print(args[0])
         print(self.time, '-', 'Titulo', args[0], 'creado', file= log)
      
-class Borrar_observer(Log_observer):
+class Borrar_observer(Observer):
     def __init__(self, obj):
         self.obs_b = obj
         self.obs_b.Add(self)
     
     def Update(self, *args):
-        print(args)
+        log = open(self.ruta, 'a+')
+        print(self.time, '-', 'Titulo',args[0], 'eliminado', file= log)
 
-class Modificar_observer(Log_observer):
+class Modificar_observer(Observer):
     def __init__(self, obj):
         self.obs_c = obj
         self.obs_c.Add(self)
     
     def Update(self, *args):
-        print(args)
+        log = open(self.ruta, 'a+')
+        
+        if args[0] != args[1]:
+            estado = 'nombre modificado' + ' - (Nombre anterior: ' + str(args[1]) + ')'
+        else:
+            estado = 'modificado'
+        
+        print(self.time, '-', 'Titulo', args[0], estado, file= log)
