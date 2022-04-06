@@ -1,11 +1,6 @@
-from tkinter import CENTER, DISABLED, END, VERTICAL
-from tkinter import Entry
-from tkinter import Label
-from tkinter import Button
-from tkinter import Radiobutton
+from tkinter import CENTER, DISABLED, END, VERTICAL, Entry, Label, Button, Radiobutton, ttk
 from tkinter.font import NORMAL
 from modelo import Abmc
-from tkinter import ttk
 from tktemas import temas
 from tkinter.messagebox import *
 import datetime
