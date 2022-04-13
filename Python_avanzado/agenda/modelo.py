@@ -46,8 +46,6 @@ class Abmc(observers.Tema):
         # Lista vacia para poder agregar datos de la base. 
         lista_datos = []
         
-        contador = 0
-        
         # limpieza de tabla.
         records = mitreeview.get_children()
         for element in records:
@@ -64,7 +62,6 @@ class Abmc(observers.Tema):
                 0,
                 values=i
             )
-            contador += 1
     
     @Decorator
     def alta(self, titulo, descripcion, mitreeview, accion):
