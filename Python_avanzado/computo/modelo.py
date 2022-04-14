@@ -165,19 +165,15 @@ class bdd():
             ).execute()
 
 
-    def Eliminar_planta(self, id_elemento, eb, obra):
+    def Eliminar_seleccion(self, id_a_eliminar):
         """
-        Elimina de la base de datos la planta especificada en el cuadro de entrada del marco "Borrar Datos"
+        Elimina de la base de datos la planta seleccionada en los checkboxes
         """
 
-        try:
-            borrar = Computos.get(Computos.id == id_elemento)
+        for i in id_a_eliminar:
+            borrar = Computos.get(Computos.id == i)
             borrar.delete_instance()
 
-        except IndexError:
-            showinfo("Error al borrar planta",
-                     "La planta que usted precisa borrar no se encuentra cargada en la base de datos")
-            eb.delete(0, END)
 
     def Eliminar_obra(self, obra):
         """
