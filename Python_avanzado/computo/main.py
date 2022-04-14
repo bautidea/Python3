@@ -785,23 +785,27 @@ class programa():
     
     def Eliminar_seleccion(self):
         
-        self.func.Eliminar_seleccion(
-            self.add_planta,
-            self.imp_datos,
-            self.suma_datos,
-            self.total,
-            self.tot_hormigon,
-            self.tot_fi6,
-            self.tot_fi8,
-            self.tot_fi10,
-            self.tot_fi12,
-            self.tot_fi16,
-            self.tot_fi20,
-            self.tot_fi25,
-            self.materiales
-        )
-        
-        self.Suma()
+        if askyesno("Eliminar seleccion", "Los elementos seleccionados tambien seran eliminados de la base de datos, proceder de igual manera?"):
+            id_a_eliminar = self.func.Eliminar_seleccion(
+                            self.add_planta,
+                            self.imp_datos,
+                            self.suma_datos,
+                            self.total,
+                            self.tot_hormigon,
+                            self.tot_fi6,
+                            self.tot_fi8,
+                            self.tot_fi10,
+                            self.tot_fi12,
+                            self.tot_fi16,
+                            self.tot_fi20,
+                            self.tot_fi25,
+                            self.materiales
+                        )
+            
+            self.base_datos.Eliminar_seleccion(id_a_eliminar)
+            
+            self.Actualizar_tree()
+            self.Suma()
 
 
 if __name__ == "__main__":
