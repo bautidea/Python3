@@ -536,13 +536,23 @@ class Funciones():
         mat.grid(columnspan=1)
     
     def Eliminar_seleccion(self, ap, imd, sd, t, th, t6, t8, t10, t12, t16, t20, t25, mat):
-        seleccion = []
+        seleccion_plantas = []
+        seleccion_id = []
+        
+        id_a_eliminar = []
         
         for pos in self.checkbox_var:
             if pos.get() == 1:
-                seleccion.append(self.checkbox_var.index(pos))
-        
-        for i in seleccion[::-1]:            
+                seleccion_plantas.append(self.checkbox_var.index(pos))
+                    
+        if self.entradas_plantasid:
+            cantidad_ids = len(self.entradas_plantasid)
+            
+            for pos_id in self.checkbox_var[0: cantidad_ids]:    
+                if pos_id.get() == 1:
+                    seleccion_id.append(self.checkbox_var.index(pos_id)) 
+               
+        for i in seleccion_plantas[::-1]:            
 
             self.entradas_plantas[i].destroy()
             self.entradas_plantas.pop(i)
@@ -575,8 +585,14 @@ class Funciones():
             self.checkbox.pop(i)
             
             self.checkbox_var.pop(i)
+            
+        for j in seleccion_id[::-1]:
+            id_a_eliminar.append(self.entradas_plantasid[j])
+            self.entradas_plantasid.pop(j)      
         
-        self.contador_columnas = self.contador_columnas - len(seleccion)
+        self.contador_columnas = self.contador_columnas - len(seleccion_plantas)
 
         # Configuramos la grilla
         self.Configurar_grilla(ap, imd, sd, t, th, t6, t8, t10, t12, t16, t20, t25, mat)
+        
+        return id_a_eliminar
