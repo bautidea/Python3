@@ -536,24 +536,45 @@ class Funciones():
         mat.grid(columnspan=1)
     
     def Eliminar_seleccion(self, ap, imd, sd, t, th, t6, t8, t10, t12, t16, t20, t25, mat):
+        '''
+        Elimina los elementos seleccionados de la grilla, y si los mismos estan cargados
+        en la base de datos, pasa dichos valores para que sean removidos de la misma.
+        '''
+        
+        # Listas que recibiran la posicion de los elementos a eliminar
         seleccion_plantas = []
         seleccion_id = []
         
+        # Lista que recibira los numeros de id a eliminar de la base de datos
         id_a_eliminar = []
         
+        # Recorremos todos los checkboxes.
         for pos in self.checkbox_var:
+            # Nos fijamos cuales estan seleccionados.
             if pos.get() == 1:
+                # Añiadimos la posicion de los checkboxes seleccionados, dicha posicion
+                # se corresponde con la posicion de los elementos a elimiar.
                 seleccion_plantas.append(self.checkbox_var.index(pos))
-                    
+        
+        # Corroboramos si hay alguna obra cargada de la base de datos.     
         if self.entradas_plantasid:
+            # Obtengo la cantidad de elementos cargados.
             cantidad_ids = len(self.entradas_plantasid)
             
-            for pos_id in self.checkbox_var[0: cantidad_ids]:    
+            # Recorremos la lista de checkboxes sin pasarnos de la cantidad
+            # de elementos cargados.
+            for pos_id in self.checkbox_var[0: cantidad_ids]:
+                # Nos fijamos cuales ids estan seleccionados.   
                 if pos_id.get() == 1:
+                    # Añiadimos la posicion de los checkboxes seleccionados, la cual se
+                    # correponde con la posicion de ids a elimninar.
                     seleccion_id.append(self.checkbox_var.index(pos_id)) 
-               
+        
+        # Recorremos la lista de posiciones, cada elemento se corresponde con la 
+        # posicion a eliminar.       
         for i in seleccion_plantas[::-1]:            
-
+            # Eliminamos los entrys correspondientes, y eliminamos el elemento de
+            # la lista.
             self.entradas_plantas[i].destroy()
             self.entradas_plantas.pop(i)
             
@@ -585,14 +606,22 @@ class Funciones():
             self.checkbox.pop(i)
             
             self.checkbox_var.pop(i)
-            
+         
+        # Recorremos la lista de posiciones de ids a eliminar.    
         for j in seleccion_id[::-1]:
+            # Obtenemos los valores de los ids que vamos a elimnar de la base de datos.
+            # y los agregamos a una lista que se lo pasaremos al ORM, el cual
+            # los eliminara de la base de datos.
             id_a_eliminar.append(self.entradas_plantasid[j])
+            
+            # Eliminamos el elemento seleccionado de la lista.
             self.entradas_plantasid.pop(j)      
         
+        # Obtenemos la cantidad de columnas en la grilla para poder configurar la misma.
         self.contador_columnas = self.contador_columnas - len(seleccion_plantas)
 
         # Configuramos la grilla
         self.Configurar_grilla(ap, imd, sd, t, th, t6, t8, t10, t12, t16, t20, t25, mat)
         
+        # Devolvemos los valores de ids a eliminar
         return id_a_eliminar
