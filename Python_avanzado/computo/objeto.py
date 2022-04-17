@@ -2,9 +2,10 @@ from tkinter import *
 import tkinter as tk
 from tkinter.messagebox import *
 import os
+import observers
 
 
-class Funciones():
+class Funciones(observers.Tema):
     """
     Esta clase esta encargada del funcionamiento de la aplicacion 
     Y las tareas que realiza cada boton
@@ -31,6 +32,9 @@ class Funciones():
         self.checkbox_var = []
 
         self.contador_columnas = 0
+    
+    def Inicio(self):
+        self.Notify_inicio()    
 
     def Salir(self, salida):
         """
@@ -39,6 +43,8 @@ class Funciones():
 
         if askyesno("Finalizar Ejecucion", "desea salir del programa?"):
             salida.destroy()
+            
+            self.Notify_fin()
 
     def Add_columna(self, app, ap, imd, sd, t, th, t6, t8, t10, t12, t16, t20, t25, mat, bs):
         """
@@ -242,6 +248,8 @@ class Funciones():
         showinfo("REGISTRO CREADO",
                  "Se creo un archivo llamado Computos_" + str(obra.get()))
 
+        self.Notify_imprimir(obra.get())
+
     def Suma(self, th, t6, t8, t10, t12, t16, t20, t25):
         """
         Suma los datos de la planilla para obtener un total de cada material
@@ -354,9 +362,6 @@ class Funciones():
         Creando las columnas que tenia la obra y asignandole los datos
         """
 
-        # Creo un contador para determinar si una obra tiene datos cargados
-        contador_plantas = 0
-
         for i in resultado:  # Recorremos las tuplas dentro de la lista "resultado"
 
             # Filtramos los nombres de las obras y solamente obtenemos el nombre buscado
@@ -414,24 +419,22 @@ class Funciones():
 
                     self.entradas_totalid.append(i[0])
 
-                # Si llegara a cargar algun dato el contador aumenta y de esa manera se si se cargo algun dato
-                contador_plantas += 1
-                
-        if contador_plantas >= 1:  # Si el contador aumento significa que cargo datos
+        # El nombre de la obra cargada se mueve de lugar
+        obra.insert(END, obra_acargar)
 
-            # El nombre de la obra cargada se mueve de lugar
-            obra.insert(END, obra_acargar)
+        # Habilito el boton para modificar los registros de la base de datos
+        ar.config(state=NORMAL)
+        bo.config(state=NORMAL)
 
-            # Habilito el boton para modificar los registros de la base de datos
-            ar.config(state=NORMAL)
-            bo.config(state=NORMAL)
+        # Desabilito el boton de alta de datos
+        aa.config(state=DISABLED)
 
-            # Desabilito el boton de alta de datos
-            aa.config(state=DISABLED)
-
-        else:  # Si el contador no aumento, significa que no se cargaron datos, puede ser que el nombre este mal escrito
-            showinfo("Error al cargar obra",
-                     "No se pudo cargar la obra ingresada, verifique si esta bien escrita o si esta ingresada")
+        # Guardo en una variable el nombre de la obra cargada, por si se modifica
+        # el mismo
+        self.nombre_obra_original = obra_acargar
+        
+        self.Notify_consulta(obra_acargar)
+        
 
     def Limpiar_pantalla(self, obra, th, t6, t8, t10, t12, t16, t20, t25, t, ap, imd, sd, mat, ar, bo, bs):
         """

@@ -2,6 +2,7 @@ from peewee import *
 from tkinter.messagebox import *
 from tkinter import *
 from tkinter.messagebox import *
+import observers
 
 db = SqliteDatabase('bd_deangelis_intermedio.db')   
 
@@ -20,9 +21,13 @@ class Computos(Model):
     class Meta:
         database = db
 
-class bdd():
+class Abmc(observers.Tema):
     """
-    Clase que contiene los metodos encargados del manejo de la base de datos
+    Clase encargada del CRUD de la base de datos, esta clase
+    hereda de la clase 'tema', del modulo 'observers.py', la cual
+    le avisa a los observadores que a habido un cambio de estado
+    cuando se ejecuta determinado metodo ('alta', 'bajo', 'modificar', 
+    'consulta') para que los observadores creen un log que informe los cambios.
     """
 
     def __init__(self):  # Al instanciar creo la base de datos
@@ -71,6 +76,7 @@ class bdd():
             )
         computo_total.save()
         
+        self.Notify_alta(obra.get())        
 
     def Consultar_bdd(self):
         """
@@ -101,7 +107,7 @@ class bdd():
         return lista_obras
 
 
-    def Modificacion(self, obra, ep, eh, e6, e8, e10, e12, e16, e20, e25, epid, th, t6, t8, t10, t12, t16, t20, t25, etid):
+    def Modificacion(self, obra, ep, eh, e6, e8, e10, e12, e16, e20, e25, epid, th, t6, t8, t10, t12, t16, t20, t25, etid, nombre_original):
         """
         Modifica los registros de la base de datos, agregando los cambios realizados o las columnas agregadas
         """
@@ -163,9 +169,13 @@ class bdd():
             ).where(
                 Computos.id == etid[0]
             ).execute()
+        
+        plantas_agregadas = len(ep) - len(epid)
+        
+        self.Notify_modificar(obra.get(),nombre_original, plantas_agregadas)
 
 
-    def Eliminar_seleccion(self, id_a_eliminar):
+    def Eliminar_seleccion(self, id_a_eliminar, obra):
         """
         Elimina de la base de datos la planta seleccionada en los checkboxes
         """
@@ -173,6 +183,8 @@ class bdd():
         for i in id_a_eliminar:
             borrar = Computos.get(Computos.id == i)
             borrar.delete_instance()
+        
+        self.Notify_baja_seleccion(len(id_a_eliminar), obra)
 
 
     def Eliminar_obra(self, obra):
@@ -183,4 +195,5 @@ class bdd():
         borrar = Computos.delete().where(Computos.nombre_obra == obra.get())
         borrar.execute()
 
+        self.Notify_baja_obra(obra.get())
 
