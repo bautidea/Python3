@@ -1,11 +1,9 @@
-from ast import NotIn
 from tkinter import *
-import re
-from tkinter.messagebox import askyesno, showinfo
-from tkinter.ttk import Labelframe, Treeview
+from tkinter.messagebox import askyesno
+from tkinter.ttk import Treeview
 from modelo import bdd
 from objeto import Funciones
-
+import decorators
 
 class programa():
     """
@@ -21,10 +19,10 @@ class programa():
         self.master = ventana
 
         self.master.title("Trabajo Final")
-
+        
         # Marco de la app
         self.frame = Frame(self.master, padx = 5,pady = 5)
-        self.frame.grid(column = 0, row = 0, padx = 5, pady = 5, columnspan= 2, sticky= 'nsw')
+        self.frame.grid(column = 0, row = 0, padx = 5, pady = 5, columnspan= 3, sticky= 'nsw')
         
         # Marcos adicionales edicion y eliminacion de datos
         self.frame_editar = LabelFrame(
@@ -47,16 +45,19 @@ class programa():
             padx=5
         )
         self.frame_borrar.grid(
-            column=1,
+            column=2,
             row=1,
             padx=10,
             pady=10
         )
         
         # Marco del treeview
-        self.frame_treev = Frame(self.master, pady=5, padx=5)
-        self.frame_treev.grid(column = 0, row = 2, columnspan= 3, pady = 5, padx = 5)
+        self.frame_treev_obra = Frame(self.master, pady=5, padx=5)
+        self.frame_treev_obra.grid(column = 0, row = 2, columnspan= 3, pady = 5, padx = 5)
 
+        self.frame_treev_info = Frame(self.master)
+        self.frame_treev_info.grid(column = 1, row = 1)
+        
         # Etiquetas
         self.nombre = Label(
             self.frame,
@@ -337,7 +338,7 @@ class programa():
         self.imp_datos = Button(
             self.frame,
             text="Imprimir datos",
-            command=lambda: self.Imprimir_datos(),
+            command=lambda: self.Imprimir_datos(self.tree_info, self.obra),
             pady=5,
             padx=5
         )
@@ -369,7 +370,7 @@ class programa():
         self.add_planta = Button(
             self.frame,
             text="Agregar Planta",
-            command=lambda: self.Add_columna(),
+            command=lambda: self.Add_columna(self.tree_info),
             pady=5,
             padx=5
         )
@@ -386,7 +387,7 @@ class programa():
         self.alta_datos = Button(
             self.frame_editar,
             text="Alta de datos",
-            command=lambda: self.Alta(),
+            command=lambda: self.Alta(self.tree_info, self.obra, self.base_datos.Consultar_obra()),
             justify=CENTER
         )
         self.alta_datos.grid(
@@ -400,7 +401,7 @@ class programa():
         self.actualizar_registros = Button(
             self.frame_editar,
             text="Guardar Cambios",
-            command=lambda: self.Modificacion(),
+            command=lambda: self.Modificacion(self.tree_info, self.obra),
             justify=CENTER,
             state=DISABLED
         )
@@ -418,7 +419,7 @@ class programa():
             text="Borrar seleccion",
             justify=CENTER,
             state=DISABLED,
-            command=lambda: self.Eliminar_seleccion()
+            command=lambda: self.Eliminar_seleccion(self.tree_info, self.obra, self.func.checkbox_var)
         )
         self.borrar_seleccion.grid(
             column=0,
@@ -432,7 +433,7 @@ class programa():
             self.frame_borrar,
             text="Borrar Obra",
             justify=CENTER,
-            command=lambda: self.Eliminar_obra(),
+            command=lambda: self.Eliminar_obra(self.tree_info, self.obra),
             state=DISABLED
         )
         self.borrar_obra.grid(
@@ -443,36 +444,53 @@ class programa():
             pady=5
         )
 
-        # Treeview
-        columnas = ('col_obra', 'col_plantas', 'col_info')
+        # Treeview de obras
+        columnas_obras = ('col_obra', 'col_plantas')
         
-        self.tree = Treeview(self.frame_treev, columns= columnas, show= 'headings')
-        self.tree.grid(column=0, row=0, columnspan=2)
+        self.tree_obra = Treeview(self.frame_treev_obra, columns= columnas_obras, show= 'headings', height=5)
+        self.tree_obra.grid(column=0, row=0, columnspan=2)
         
-        self.tree.heading('col_obra', text= 'Obra')
-        self.tree.column('col_obra', anchor=CENTER)
+        self.tree_obra.heading('col_obra', text= 'Obra')
+        self.tree_obra.column('col_obra', anchor=CENTER)
         
-        self.tree.heading('col_plantas', text= 'Nro de plantas')
-        self.tree.column('col_plantas', anchor=CENTER)
+        self.tree_obra.heading('col_plantas', text= 'Nro de plantas')
+        self.tree_obra.column('col_plantas', anchor=CENTER)
         
-        self.tree.heading('col_info', text= 'Informacion')
-        self.tree.column('col_info', anchor=CENTER)
-        
-        tree_scrollbar = Scrollbar(self.frame_treev, orient = VERTICAL, command = self.tree.yview)
-        self.tree.configure(yscrollcommand= tree_scrollbar.set)
-        tree_scrollbar.grid(column = 2, row = 0, padx = 5, pady = 5,sticky = 'nse')
+        tree_obra_scrollbar = Scrollbar(self.frame_treev_obra, orient = VERTICAL, command = self.tree_obra.yview)
+        self.tree_obra.configure(yscrollcommand= tree_obra_scrollbar.set)
+        tree_obra_scrollbar.grid(column = 1, row = 0, padx = 5, pady = 5,sticky = 'nse')
         
         # Al hacer doble click en algun elemento del treeview me carga los datos
         # corresponientes a la obra
-        self.tree.bind('<Double-1>', self.Cargar_obra)
+        self.tree_obra.bind('<Double-1>', self.Double_click)
         
         # Al pusar la X para cerrar, llama a la funcion 'salir'
         self.master.protocol("WM_DELETE_WINDOW", self.Salir)
+        
+        # Treview de acciones
+        columnas_info = ('col_info')
+        
+        self.tree_info = Treeview(self.frame_treev_info, columns= columnas_info, show= 'headings', height=3)
+        self.tree_info.grid(column=0, row=0)
+        
+        self.tree_info.heading('col_info', text= 'Acciones')
+        #self.tree_info.column('col_info', anchor=CENTER)
+        
+        tree_info_scrollbar = Scrollbar(self.frame_treev_info, orient = VERTICAL, command = self.tree_info.yview)
+        self.tree_info.configure(yscrollcommand= tree_info_scrollbar.set)
+        tree_info_scrollbar.grid(column = 0, row = 0, padx = 5, pady = 5,sticky = 'nse')
+        
+        
         
         # instanciaciones de las clases
         self.base_datos = bdd()
         self.func = Funciones()
         self.Actualizar_tree()
+        self.Inicio(self.tree_info)
+    
+    @decorators.Decorator
+    def Inicio(self, tree):
+        pass    
 
     def Salir(self):
         """
@@ -480,7 +498,8 @@ class programa():
         """
         self.func.Salir(self.master)
 
-    def Add_columna(self):
+    @decorators.Decorator
+    def Add_columna(self, tree):
         """
         Se ejecuta el metodo "suma"
         Añade una columna a la grilla 
@@ -507,7 +526,8 @@ class programa():
             self.borrar_seleccion
         )
 
-    def Imprimir_datos(self):
+    @decorators.Decorator
+    def Imprimir_datos(self, tree, obra):
         """
         Se ejecuta el metodo "suma"
         Crea un archivo de texto que contiene los datos de la obra cargada
@@ -541,147 +561,133 @@ class programa():
             self.tot_fi25
         )
 
-    def Alta(self):
+    @decorators.Decorator
+    def Alta(self, tree, obra, obra_presente):
         """
         Antes de realizar la importacion ejecuta el metodo "suma"
         Importa la obra a la base de datos
         Al realizar la importacion con exito resetea la grilla e elimina los datos
         """
 
-        self.Suma()
+        self.Suma()       
+            
+        self.base_datos.Alta(
+            self.obra,
+            self.tot_hormigon,
+            self.tot_fi6,
+            self.tot_fi8,
+            self.tot_fi10,
+            self.tot_fi12,
+            self.tot_fi16,
+            self.tot_fi20,
+            self.tot_fi25,
+            self.func.entradas_plantas,
+            self.func.entradas_hormigon,
+            self.func.entradas_fi6,
+            self.func.entradas_fi8,
+            self.func.entradas_fi10,
+            self.func.entradas_fi12,
+            self.func.entradas_fi16,
+            self.func.entradas_fi20,
+            self.func.entradas_fi25
+        )
 
-        # Verificamos que el nombre de la obra este todo en minusculas y sin espacios, antes de importar losd datos a la tabla
-        # Usamos regex para verificar que la obra sea escrita en minusucla, para recuperar datos de manera mas facil
-        cadena = str(self.obra.get())
-        patron = "[a-z_0-9]"
-
-        obra_presente = self.base_datos.Consultar_obra()
-
-        if cadena not in obra_presente:
-            if (re.match(patron, cadena)):
-                # Mensaje para avisar si esta seguro de la importacion de registros
-                if askyesno("Eliminacion de datos",
-                            "Se eliminaran todos los campos actuales para realizar la accion, esta seguro?"):
-
-                    self.base_datos.Alta(
-                        self.obra,
-                        self.tot_hormigon,
-                        self.tot_fi6,
-                        self.tot_fi8,
-                        self.tot_fi10,
-                        self.tot_fi12,
-                        self.tot_fi16,
-                        self.tot_fi20,
-                        self.tot_fi25,
-                        self.func.entradas_plantas,
-                        self.func.entradas_hormigon,
-                        self.func.entradas_fi6,
-                        self.func.entradas_fi8,
-                        self.func.entradas_fi10,
-                        self.func.entradas_fi12,
-                        self.func.entradas_fi16,
-                        self.func.entradas_fi20,
-                        self.func.entradas_fi25
-                    )
-
-                    self.func.Limpiar_pantalla(
-                        self.obra,
-                        self.tot_hormigon,
-                        self.tot_fi6,
-                        self.tot_fi8,
-                        self.tot_fi10,
-                        self.tot_fi12,
-                        self.tot_fi16,
-                        self.tot_fi20,
-                        self.tot_fi25,
-                        self.total,
-                        self.add_planta,
-                        self.imp_datos,
-                        self.suma_datos,
-                        self.materiales,
-                        self.actualizar_registros,
-                        self.borrar_obra,
-                        self.borrar_seleccion
-                    )
-                    
-                    self.Actualizar_tree()
-                    
-            else:  # Si el nombre de la obra no esta escrito con los caracteres especificados me avisa de ello y no me deja importar los registros
-                showinfo("Fallo en importacion",
-                         "Fallo al subir los registros a la tabla, el nombre del edificio debe ser escrito todo en minuscula y sin espacios")
-        else:
-            showinfo("Error al importar obra",
-                     "No se pudo importar la obra, ya hay una obra con el mismo nombre")
-
+        self.func.Limpiar_pantalla(
+            self.obra,
+            self.tot_hormigon,
+            self.tot_fi6,
+            self.tot_fi8,
+            self.tot_fi10,
+            self.tot_fi12,
+            self.tot_fi16,
+            self.tot_fi20,
+            self.tot_fi25,
+            self.total,
+            self.add_planta,
+            self.imp_datos,
+            self.suma_datos,
+            self.materiales,
+            self.actualizar_registros,
+            self.borrar_obra,
+            self.borrar_seleccion
+        )
+        
+        self.Actualizar_tree()
+                                
+        
     def Actualizar_tree(self):
         """
         Actualiza el treeview para poder visualizar las obras cargadas
         """
 
         resultado = self.base_datos.Consultar_obra()
-        self.func.Actualizar_tree(self.tree, resultado)
+        self.func.Actualizar_tree(self.tree_obra, resultado)
+     
+    def Double_click(self, event):
+        valores = self.tree_obra.item(self.tree_obra.focus(),'values')
+        obra = valores[0]
+        
+        self.Cargar_obra(self.tree_info, obra)    
 
-    def Cargar_obra(self, event):
+    @decorators.Decorator
+    def Cargar_obra(self, tree, obra):
         """
         Antes de  cargar la obra elimina los datos que estan en la grilla
         Carga en la grilla la obra solicitada por el usuario
         """
+        
+        resultado = self.base_datos.Consultar_bdd()
+        
+        valores_tree = self.tree_obra.item(self.tree_obra.focus(),'values')
+        obra_acargar = valores_tree[0]
 
-        # Mensaje para avisar si esta seguro de la accion a ejecutar
-        if askyesno("Eliminacion de datos",
-                    "Se eliminaran todos los campos actuales para realizar la accion, esta seguro?"):
+        self.func.Limpiar_pantalla(
+            self.obra,
+            self.tot_hormigon,
+            self.tot_fi6,
+            self.tot_fi8,
+            self.tot_fi10,
+            self.tot_fi12,
+            self.tot_fi16,
+            self.tot_fi20,
+            self.tot_fi25,
+            self.total,
+            self.add_planta,
+            self.imp_datos,
+            self.suma_datos,
+            self.materiales,
+            self.actualizar_registros,
+            self.borrar_obra,
+            self.borrar_seleccion
+        )
 
-            resultado = self.base_datos.Consultar_bdd()
-            
-            valores_tree = self.tree.item(self.tree.focus(),'values')
-            obra_acargar = valores_tree[0]
+        self.func.Cargar_obra(
+            resultado,
+            obra_acargar,                
+            self.frame,
+            self.add_planta,
+            self.imp_datos,
+            self.suma_datos,
+            self.total,
+            self.tot_hormigon,
+            self.tot_fi6,
+            self.tot_fi8,
+            self.tot_fi10,
+            self.tot_fi12,
+            self.tot_fi16,
+            self.tot_fi20,
+            self.tot_fi25,
+            self.materiales,
+            self.obra,
+            self.actualizar_registros,
+            self.borrar_obra,
+            self.alta_datos,
+            self.borrar_seleccion
+        )
+        self.Actualizar_tree()
 
-            self.func.Limpiar_pantalla(
-                self.obra,
-                self.tot_hormigon,
-                self.tot_fi6,
-                self.tot_fi8,
-                self.tot_fi10,
-                self.tot_fi12,
-                self.tot_fi16,
-                self.tot_fi20,
-                self.tot_fi25,
-                self.total,
-                self.add_planta,
-                self.imp_datos,
-                self.suma_datos,
-                self.materiales,
-                self.actualizar_registros,
-                self.borrar_obra,
-                self.borrar_seleccion
-            )
-
-            self.func.Cargar_obra(
-                resultado,
-                obra_acargar,                
-                self.frame,
-                self.add_planta,
-                self.imp_datos,
-                self.suma_datos,
-                self.total,
-                self.tot_hormigon,
-                self.tot_fi6,
-                self.tot_fi8,
-                self.tot_fi10,
-                self.tot_fi12,
-                self.tot_fi16,
-                self.tot_fi20,
-                self.tot_fi25,
-                self.materiales,
-                self.obra,
-                self.actualizar_registros,
-                self.borrar_obra,
-                self.alta_datos,
-                self.borrar_seleccion
-            )
-            self.Actualizar_tree()
-
-    def Modificacion(self):
+    @decorators.Decorator
+    def Modificacion(self, tree, obra):
         """
         Se modifican los datos de la obra cargada de la base de datos
         Permite editar y agregar columnas en una obra ya cargada
@@ -689,125 +695,121 @@ class programa():
         Al terminar la edicion se reseteara y eliminaran los datos de la grilla
         """
 
-        # Mensaje para avisar si esta seguro de la accion a ejecutar
-        if askyesno("Eliminacion de datos",
-                    "Se eliminaran todos los campos actuales para realizar la accion, esta seguro?"):
-            self.Suma()
+        self.Suma()
 
-            ep = self.func.entradas_plantas
-            eh = self.func.entradas_hormigon
-            e6 = self.func.entradas_fi6
-            e8 = self.func.entradas_fi8
-            e10 = self.func.entradas_fi10
-            e12 = self.func.entradas_fi12
-            e16 = self.func.entradas_fi16
-            e20 = self.func.entradas_fi20
-            e25 = self.func.entradas_fi25
-            epid = self.func.entradas_plantasid
-            etid = self.func.entradas_totalid
+        ep = self.func.entradas_plantas
+        eh = self.func.entradas_hormigon
+        e6 = self.func.entradas_fi6
+        e8 = self.func.entradas_fi8
+        e10 = self.func.entradas_fi10
+        e12 = self.func.entradas_fi12
+        e16 = self.func.entradas_fi16
+        e20 = self.func.entradas_fi20
+        e25 = self.func.entradas_fi25
+        epid = self.func.entradas_plantasid
+        etid = self.func.entradas_totalid
 
-            self.base_datos.Modificacion(
-                self.obra,
-                ep,
-                eh,
-                e6,
-                e8,
-                e10,
-                e12,
-                e16,
-                e20,
-                e25,
-                epid,
-                self.tot_hormigon,
-                self.tot_fi6,
-                self.tot_fi8,
-                self.tot_fi10,
-                self.tot_fi12,
-                self.tot_fi16,
-                self.tot_fi20,
-                self.tot_fi25,
-                etid
-            )
+        self.base_datos.Modificacion(
+            self.obra,
+            ep,
+            eh,
+            e6,
+            e8,
+            e10,
+            e12,
+            e16,
+            e20,
+            e25,
+            epid,
+            self.tot_hormigon,
+            self.tot_fi6,
+            self.tot_fi8,
+            self.tot_fi10,
+            self.tot_fi12,
+            self.tot_fi16,
+            self.tot_fi20,
+            self.tot_fi25,
+            etid
+        )
 
-            self.func.Limpiar_pantalla(
-                self.obra,
-                self.tot_hormigon,
-                self.tot_fi6,
-                self.tot_fi8,
-                self.tot_fi10,
-                self.tot_fi12,
-                self.tot_fi16,
-                self.tot_fi20,
-                self.tot_fi25,
-                self.total,
-                self.add_planta,
-                self.imp_datos,
-                self.suma_datos,
-                self.materiales,
-                self.actualizar_registros,
-                self.borrar_obra,
-                self.borrar_seleccion
-            )
-            self.Actualizar_tree()
-            
-            # Habilito el boton de alta de datos
-            self.alta_datos.config(state = NORMAL)
+        self.func.Limpiar_pantalla(
+            self.obra,
+            self.tot_hormigon,
+            self.tot_fi6,
+            self.tot_fi8,
+            self.tot_fi10,
+            self.tot_fi12,
+            self.tot_fi16,
+            self.tot_fi20,
+            self.tot_fi25,
+            self.total,
+            self.add_planta,
+            self.imp_datos,
+            self.suma_datos,
+            self.materiales,
+            self.actualizar_registros,
+            self.borrar_obra,
+            self.borrar_seleccion
+        )
+        self.Actualizar_tree()
+        
+        # Habilito el boton de alta de datos
+        self.alta_datos.config(state = NORMAL)
 
-    def Eliminar_obra(self):
+    @decorators.Decorator
+    def Eliminar_seleccion(self, tree, obra, checkbox_var):
+        
+        id_a_eliminar = self.func.Eliminar_seleccion(
+                        self.add_planta,
+                        self.imp_datos,
+                        self.suma_datos,
+                        self.total,
+                        self.tot_hormigon,
+                        self.tot_fi6,
+                        self.tot_fi8,
+                        self.tot_fi10,
+                        self.tot_fi12,
+                        self.tot_fi16,
+                        self.tot_fi20,
+                        self.tot_fi25,
+                        self.materiales
+                    )
+        
+        self.base_datos.Eliminar_seleccion(id_a_eliminar)
+        
+        self.Actualizar_tree()
+        self.Suma()
+    
+    @decorators.Decorator        
+    def Eliminar_obra(self, tree, obra):
         """
         Elimina la obra que se cargo previamente de la base de datos
         """
 
-        if askyesno("Eliminar obra", "Esta seguro que desea remover la obra de la base de datos?"):
-            self.base_datos.Eliminar_obra(self.obra)
-            
-            self.func.Limpiar_pantalla(
-                self.obra,
-                self.tot_hormigon,
-                self.tot_fi6,
-                self.tot_fi8,
-                self.tot_fi10,
-                self.tot_fi12,
-                self.tot_fi16,
-                self.tot_fi20,
-                self.tot_fi25,
-                self.total,
-                self.add_planta,
-                self.imp_datos,
-                self.suma_datos,
-                self.materiales,
-                self.actualizar_registros,
-                self.borrar_obra,
-                self.borrar_seleccion
-            )
-            self.Actualizar_tree()
-            self.alta_datos.config(state=NORMAL)
-    
-    def Eliminar_seleccion(self):
+        self.base_datos.Eliminar_obra(self.obra)
         
-        if askyesno("Eliminar seleccion", "Los elementos seleccionados tambien seran eliminados de la base de datos, proceder de igual manera?"):
-            id_a_eliminar = self.func.Eliminar_seleccion(
-                            self.add_planta,
-                            self.imp_datos,
-                            self.suma_datos,
-                            self.total,
-                            self.tot_hormigon,
-                            self.tot_fi6,
-                            self.tot_fi8,
-                            self.tot_fi10,
-                            self.tot_fi12,
-                            self.tot_fi16,
-                            self.tot_fi20,
-                            self.tot_fi25,
-                            self.materiales
-                        )
-            
-            self.base_datos.Eliminar_seleccion(id_a_eliminar)
-            
-            self.Actualizar_tree()
-            self.Suma()
-
-
+        self.func.Limpiar_pantalla(
+            self.obra,
+            self.tot_hormigon,
+            self.tot_fi6,
+            self.tot_fi8,
+            self.tot_fi10,
+            self.tot_fi12,
+            self.tot_fi16,
+            self.tot_fi20,
+            self.tot_fi25,
+            self.total,
+            self.add_planta,
+            self.imp_datos,
+            self.suma_datos,
+            self.materiales,
+            self.actualizar_registros,
+            self.borrar_obra,
+            self.borrar_seleccion
+        )
+        self.Actualizar_tree()
+        self.alta_datos.config(state=NORMAL)
+    
 if __name__ == "__main__":
 
     master_tk = Tk()
