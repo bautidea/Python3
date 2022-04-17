@@ -1,9 +1,9 @@
 from tkinter import *
-from tkinter.messagebox import askyesno
 from tkinter.ttk import Treeview
-from modelo import bdd
+from modelo import Abmc
 from objeto import Funciones
 import decorators
+import observers
 
 class programa():
     """
@@ -401,7 +401,7 @@ class programa():
         self.actualizar_registros = Button(
             self.frame_editar,
             text="Guardar Cambios",
-            command=lambda: self.Modificacion(self.tree_info, self.obra),
+            command=lambda: self.Modificacion(self.tree_info, self.obra.get()),
             justify=CENTER,
             state=DISABLED
         )
@@ -419,7 +419,7 @@ class programa():
             text="Borrar seleccion",
             justify=CENTER,
             state=DISABLED,
-            command=lambda: self.Eliminar_seleccion(self.tree_info, self.obra, self.func.checkbox_var)
+            command=lambda: self.Eliminar_seleccion(self.tree_info, self.func.checkbox_var)
         )
         self.borrar_seleccion.grid(
             column=0,
@@ -433,7 +433,7 @@ class programa():
             self.frame_borrar,
             text="Borrar Obra",
             justify=CENTER,
-            command=lambda: self.Eliminar_obra(self.tree_info, self.obra),
+            command=lambda: self.Eliminar_obra(self.tree_info, self.obra.get()),
             state=DISABLED
         )
         self.borrar_obra.grid(
@@ -479,18 +479,30 @@ class programa():
         tree_info_scrollbar = Scrollbar(self.frame_treev_info, orient = VERTICAL, command = self.tree_info.yview)
         self.tree_info.configure(yscrollcommand= tree_info_scrollbar.set)
         tree_info_scrollbar.grid(column = 0, row = 0, padx = 5, pady = 5,sticky = 'nse')
-        
-        
-        
+                
         # instanciaciones de las clases
-        self.base_datos = bdd()
+        self.base_datos = Abmc()
         self.func = Funciones()
+        
+        # Instancio los observadores, indicandoles a cada uno el metodo 
+        # a observar, pasandoles por parametro la instanciacion de la 
+        # clase del CRUD.
+        self.obs_inicio = observers.Inicio_observer(self.func)
+        self.obs_alta = observers.Alta_observer(self.base_datos)
+        self.obs_baja_seleccion = observers.Baja_seleccion_observer(self.base_datos)
+        self.obs_baja_obra = observers.Baja_obra_observer(self.base_datos)
+        self.obs_modificar = observers.Modificar_observer(self.base_datos)
+        self.obs_consulta = observers.Consulta_observer(self.func)
+        self.obs_fin = observers.Fin_observer(self.func)
+        self.obs_imprimir = observers.Imprimir_observer(self.func)
+        
+        # Ejecutamos los metodos de inicio de la aplicacion
         self.Actualizar_tree()
         self.Inicio(self.tree_info)
     
     @decorators.Decorator
     def Inicio(self, tree):
-        pass    
+        self.func.Inicio()    
 
     def Salir(self):
         """
@@ -708,6 +720,7 @@ class programa():
         e25 = self.func.entradas_fi25
         epid = self.func.entradas_plantasid
         etid = self.func.entradas_totalid
+        nombre_original = self.func.nombre_obra_original
 
         self.base_datos.Modificacion(
             self.obra,
@@ -729,7 +742,8 @@ class programa():
             self.tot_fi16,
             self.tot_fi20,
             self.tot_fi25,
-            etid
+            etid,
+            nombre_original
         )
 
         self.func.Limpiar_pantalla(
@@ -757,7 +771,7 @@ class programa():
         self.alta_datos.config(state = NORMAL)
 
     @decorators.Decorator
-    def Eliminar_seleccion(self, tree, obra, checkbox_var):
+    def Eliminar_seleccion(self, tree, checkbox_var):
         
         id_a_eliminar = self.func.Eliminar_seleccion(
                         self.add_planta,
@@ -775,7 +789,7 @@ class programa():
                         self.materiales
                     )
         
-        self.base_datos.Eliminar_seleccion(id_a_eliminar)
+        self.base_datos.Eliminar_seleccion(id_a_eliminar, self.obra.get())
         
         self.Actualizar_tree()
         self.Suma()
