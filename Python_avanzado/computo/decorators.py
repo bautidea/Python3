@@ -88,9 +88,8 @@ def Decorator(method):
         
         if method.__name__ == 'Eliminar_seleccion':
             if askyesno(mensaje3, mensaje4):        
-                
-                obra = args[2]
-                chechboxes = args[3]
+            
+                chechboxes = args[2]
                 contador = 0
                 
                 for i in chechboxes:
