@@ -64,10 +64,7 @@ class Observers():
     
     # Obtengo la ruta desde donde se esta ejecutando la app.
     ruta = os.path.dirname(os.path.abspath(__file__)) + "\\computos_log.txt"
-    
-    # Obtengo la fecha y hora, cuando se lama al atributo 'time'.
-    time = datetime.datetime.now().strftime("%d/%m/%y %H:%M")
-    
+        
     # En caso de que no este encuentre a un observador al cual notoficar
     # me levanta el siguiente error.
     def Update(self):
@@ -93,8 +90,11 @@ class Inicio_observer (Observers):
         # en modo append.
         log = open(self.ruta, 'a+')
         
+        # Obtengo la fecha y hora, cuando se lama al atributo 'time'.
+        time = datetime.datetime.now().strftime("%d/%m/%y %H:%M")
+        
         # Imprimo en archivo creado, Tiempo - Titulo - estado.
-        print('*'*25, 'APLICACION INICIADA -', self.time, '*'*25, file= log)
+        print('*'*25, 'APLICACION INICIADA -', time, '*'*25, file= log)
 
 class Alta_observer (Observers):
     # Clase observadora, recibe la notificacion de la clase 'Temas'
@@ -116,8 +116,11 @@ class Alta_observer (Observers):
         # en modo append.
         log = open(self.ruta, 'a+')
         
+        # Obtengo la fecha y hora, cuando se lama al atributo 'time'.
+        time = datetime.datetime.now().strftime("%d/%m/%y %H:%M")
+        
         # Imprimo en archivo creado, Tiempo - Titulo - estado.
-        print(self.time, '-', 'Obra', args[0], 'creada', file= log)
+        print(time, '-', 'Obra', args[0], 'creada', file= log)
 
 
 class Baja_seleccion_observer(Observers):
@@ -140,8 +143,11 @@ class Baja_seleccion_observer(Observers):
         # en modo append.
         log = open(self.ruta, 'a+')
         
+        # Obtengo la fecha y hora, cuando se lama al atributo 'time'.
+        time = datetime.datetime.now().strftime("%d/%m/%y %H:%M")
+        
         # Imprimo en archivo creado, Tiempo - Titulo - estado.
-        print(self.time, '-', 'Se eliminaron',args[0], 'plantas de la base de datos - obra:', args[1], file= log)
+        print(time, '-', 'Se eliminaron',args[0], 'plantas de la base de datos - obra:', args[1], file= log)
 
 
 class Baja_obra_observer(Observers):
@@ -164,8 +170,11 @@ class Baja_obra_observer(Observers):
         # en modo append.
         log = open(self.ruta, 'a+')
         
+        # Obtengo la fecha y hora, cuando se lama al atributo 'time'.
+        time = datetime.datetime.now().strftime("%d/%m/%y %H:%M")
+        
         # Imprimo en archivo creado, Tiempo - Titulo - estado.
-        print(self.time, '-', 'Obra',args[0], 'eliminada', file= log)        
+        print(time, '-', 'Obra',args[0], 'eliminada', file= log)        
 
 
 class Modificar_observer(Observers):
@@ -188,13 +197,16 @@ class Modificar_observer(Observers):
         # en modo append.
         log = open(self.ruta, 'a+')
         
+        # Obtengo la fecha y hora, cuando se lama al atributo 'time'.
+        time = datetime.datetime.now().strftime("%d/%m/%y %H:%M")
+        
         if args[0] != args[1]:
-            print(self.time, '- Nombre de obra modificado (nombre anterior:', args[1], '-', 'nombre nuevo:', args[0], file= log) 
+            print(time, '- Nombre de obra modificado (nombre anterior:', args[1], '-', 'nombre nuevo:', args[0], file= log) 
         
         if args[2] > 0:
-            print(self.time, '- Se agregaron', args[2], 'plantas a la base de datos - obra:', args[0], file= log) 
+            print(time, '- Se agregaron', args[2], 'plantas a la base de datos - obra:', args[0], file= log) 
         
-        print(self.time, '- Obra', args[0], 'consulta finalizada', file= log)       
+        print(time, '- Obra', args[0], 'consulta finalizada', file= log)       
         
                 
 class Consulta_observer(Observers):
@@ -217,8 +229,11 @@ class Consulta_observer(Observers):
         # en modo append.
         log = open(self.ruta, 'a+')
         
+        # Obtengo la fecha y hora, cuando se lama al atributo 'time'.
+        time = datetime.datetime.now().strftime("%d/%m/%y %H:%M")
+        
         # Imprimo en archivo creado, Tiempo - Titulo - estado.
-        print(self.time, '- Obra', args[0], 'consultada', file= log)
+        print(time, '- Obra', args[0], 'consultada', file= log)
 
 
 class Fin_observer (Observers):
@@ -241,8 +256,11 @@ class Fin_observer (Observers):
         # en modo append.
         log = open(self.ruta, 'a+')
         
+        # Obtengo la fecha y hora, cuando se lama al atributo 'time'.
+        time = datetime.datetime.now().strftime("%d/%m/%y %H:%M")
+        
         # Imprimo en archivo creado, Tiempo - Titulo - estado.
-        print('*'*25, 'APLICACION FINALIZADA -', self.time, '*'*23, file= log)
+        print('*'*25, 'APLICACION FINALIZADA -', time, '*'*23, file= log)
 
 class Imprimir_observer(Observers):
     # Clase observadora, recibe la notificacion de la clase 'Temas'
@@ -264,5 +282,8 @@ class Imprimir_observer(Observers):
         # en modo append.
         log = open(self.ruta, 'a+')
         
+        # Obtengo la fecha y hora, cuando se lama al atributo 'time'.
+        time = datetime.datetime.now().strftime("%d/%m/%y %H:%M")
+        
         # Imprimo en archivo creado, Tiempo - Titulo - estado.
-        print(self.time, '- Archivo "Computos_' + str(args[0]) + '"', 'creado', file= log)
+        print(time, '- Archivo "Computos_' + str(args[0]) + '"', 'creado', file= log)
