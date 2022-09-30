@@ -156,6 +156,7 @@ class Ventanita():
             value="1",
             fg="red",
             command=lambda: temas.tema1(
+                self,
                 self.root,
                 self.titulo,
                 self.descripcion,
@@ -173,6 +174,7 @@ class Ventanita():
             value="2",
             fg="red",
             command=lambda: temas.tema2(
+                self,
                 self.root,
                 self.titulo,
                 self.descripcion,
@@ -191,6 +193,7 @@ class Ventanita():
             value="3",
             fg="red",
             command=lambda: temas.tema3(
+                self,
                 self.root,
                 self.titulo,
                 self.descripcion,
