@@ -8,7 +8,7 @@ python 3 proyects
 
   At intermediate level, the application has the same functionalities, with some upgrades.
   
-  Object oriented programming was applied, using classes, inheritance, creating different modules ('main', 'modelo' and 'objeto'), creating log files and improving the use of exceptions.
+  Object-oriented programming was applied, using classes, inheritance, creating different modules ('main', 'modelo' and 'objeto'), creating log files and improving the use of exceptions.
 
   At advanced level, applied some tweeks to the previous app and carried out a side proyect ad agenda.
   
