@@ -3,9 +3,8 @@ python 3 proyects
 
   All these projects were carried out during python3 dimplomature, in all levels i worked with the graphic interface, Tkinter.
 
-  At initial level i made an app in which the user annotate the amount of materials needed in a construction, then, it can obtain the sum of all materials and make a budget. All information is stored in a SQL database, which the user can access, query and modify.
-  
-  At this level, basic syntax is used such as functions, conditionals, loops, regular expression (regex), SQL database, exceptions
+  At initial level, made a tkinter app to compute the materials needed for the structure of a building. In which the user annotates the amount of materials needed in a construction project obtains the sum of all materials and makes a budget. All information is stored in a SQL database, which the user can access, query, and modify.
+  Basic syntaxis is used such as functions, conditionals, loops, regular expression (regex), SQL database and the use of exceptions.
 
   At intermediate level, the application has the same functionalities, with some upgrades.
   
