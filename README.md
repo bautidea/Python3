@@ -3,7 +3,7 @@ python 3 proyects
 
   All these projects were carried out during python3 dimplomature, in all levels i worked with the graphic interface, Tkinter.
 
-  At initial level, made a tkinter app to compute materials needed for the structure of a building. In which the user annotates the amount of materials needed in a construction project obtains the sum of all materials and makes a budget. All information is stored in a SQL database, which the user can access, query, and modify.
+  At initial level, made a tkinter app in which the user enters the amount of materials estimated for the structure of a building, obtains the sum of all materials, and makes a budget. All information is stored in a SQL database, which the user can access, query, and modify.
   Basic syntaxis is used such as functions, conditionals, loops, regular expression (regex), SQL database and the use of exceptions.
 
   At intermediate level, the application has the same functionalities, with some upgrades.
