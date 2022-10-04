@@ -10,13 +10,12 @@ python 3 proyects
   
   Object-oriented programming was applied, using classes, inheritance, creating different modules ('main', 'modelo' and 'objeto'), creating log files and improving the use of exceptions.
 
-  At advanced level, applied some tweeks to the previous app and carried out a side proyect ad agenda.
-  
-  In the app wich calculates the materials needed in a construction i changed from SQL to SQLite3 database.
-  
-  In both apps (agenda and construcction) i implemented an Object Relational Mapping (ORM), using peewee, which is used to handle the CRUD of the database.
-  
-  Applied  method delegation and operator overloading techniques. Through the application of Namespaces, decorators, descriptors and metaclasses, to intercept attributes from class or instance methods.
-  
-  Also used observer pattern, to create a log file (like previous apps), instead of using a method to do so.
+  At advanced level, applied some tweaks to the previous app and carried out a side project, an agenda.
+
+  Changed from MySQL to SQLite3 database.
+
+  In both apps Object Relational Mapping (ORM) was implemented, using peewee, which is used to handle the CRUD of the database.
+
+  Applied method delegation and operator overloading techniques. Through the application of Namespaces, decorators, descriptors and metaclasses, to intercept attributes from class or instance methods.
+  Also used an observer pattern, to create a log file (like previous apps), instead of using a method to do so.
 
